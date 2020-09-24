@@ -1,0 +1,10 @@
+.idea
+.devcontainer
+.vscode
+__pycache__
+bin/
+lib/
+share/
+pyvenv.cfg
+.git
+!**/__pycache__/
