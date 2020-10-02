@@ -2,6 +2,8 @@ from scapy.layers.inet import IP, ICMP
 from scapy.sendrecv import sr1
 from scapy.route import conf as scapy_conf
 
+PING_TIMEOUT = 5
+
 class Ping(object):
     """
     Sends ping to given address
@@ -18,16 +20,13 @@ class Ping(object):
 
     def send_ping(self, dst_ip, src_ip, interface):
         ping_request = IP(src=src_ip, dst=dst_ip) / ICMP(type="echo-request")
-        ping_reply = sr1(ping_request, iface=interface, timeout=2, verbose=0)
+        ping_reply = sr1(ping_request, iface=interface, timeout=PING_TIMEOUT, verbose=0)
 
         if not ping_reply:
-            return False
+            return None
 
         if ping_reply["ICMP"].type == self.ECHO_REPLY:
             return PingData(ping_reply)
-        
-        else:
-            return False
 
 class PingData(object):
     """
