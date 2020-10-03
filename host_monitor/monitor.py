@@ -1,9 +1,8 @@
 import json 
 import itertools
-from typing import Generator, Dict
+from typing import Generator, Dict, Iterator, Optional
 
 import ipaddress
-import scapy.all as scapy
 
 from .network import Ping
 
@@ -29,7 +28,7 @@ class Computer(object):
     def serialize(self) -> str:
         return json.dumps(self.attrs)
 
-    def __str__(self) -> None:
+    def __str__(self) -> str:
         string = "Computer {}:\n{{\n".format(self.attrs.get("ip", "Unknown"))
         for attr in self.attrs:
             string += " {}: {}\n".format(attr, self.attrs[attr])
@@ -48,7 +47,7 @@ class Monitor(object):
         self.network_subnet = ipaddress.ip_network(network_subnet)
         self.existing_hosts = {}
 
-    def scan_network(self) -> Generator[str, None, None]:
+    def scan_network(self) -> Generator[Computer, None, None]:
         for host in self.get_hosts():
             yield self.scan_host(host)
 
@@ -57,7 +56,7 @@ class Monitor(object):
         self.existing_hosts[host] = result
         return result
 
-    def get_hosts(self, max_hosts: int=0) -> Generator[str, None, None]:
+    def get_hosts(self, max_hosts: int=0) -> Iterator[str]:
         gen = (str(host) for host in self.network_subnet.hosts())
         if max_hosts:
             return itertools.islice(gen, max_hosts)
@@ -76,8 +75,8 @@ class Monitor(object):
         self.existing_hosts[ip_address] = computer_obj
         return computer_obj
 
-    def serialize(self) -> Dict[str]:
-        pass
+    def serialize(self) -> Dict[Computer, str]:
+        return NotImplemented
 
 if __name__ == "__main__":
     monitor = Monitor("10.0.0.0/24")

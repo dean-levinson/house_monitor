@@ -1,4 +1,4 @@
-from typing import Generic
+from typing import Optional
 
 from scapy.layers.inet import IP, ICMP
 from scapy.sendrecv import sr1
@@ -16,7 +16,7 @@ class PingData(object):
     def __init__(self, ping_reply_packet) -> None:
         self.ping_reply_packet = ping_reply_packet
 
-    def __getattr__(self, item) -> Generic:
+    def __getattr__(self, item):
         if item in self.TRANSLATOR:
             item = self.TRANSLATOR[item]
 
@@ -35,12 +35,12 @@ class Ping(object):
     def __init__(self, ip_address) -> None:
         self.dst_ip = ip_address
 
-    def activate(self) -> PingData:
+    def activate(self) -> Optional[PingData]:
         interface, src_ip, _ = scapy_conf.route.route(self.dst_ip)
 
         return self.send_ping(self.dst_ip, src_ip, interface)
 
-    def send_ping(self, dst_ip, src_ip, interface) -> PingData:
+    def send_ping(self, dst_ip, src_ip, interface) -> Optional[PingData]:
         ping_request = IP(src=src_ip, dst=dst_ip) / ICMP(type="echo-request")
         ping_reply = sr1(ping_request, iface=interface, timeout=PING_TIMEOUT, verbose=0)
 
