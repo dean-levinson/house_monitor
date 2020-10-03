@@ -1,6 +1,5 @@
 import asyncio
-import concurrent
-from typing import Coroutine
+from concurrent.futures import ThreadPoolExecutor
 
 from .monitor import Monitor, HostNotFound
 
@@ -10,10 +9,10 @@ MAX_WORKERS = 20
 NUM_OF_HOSTS = 5
 SLEEP_INTERVAL = 60 * 5 # 5 min
 
-async def scan_computers(queue) -> Coroutine[None, None, None]:
+async def scan_computers(queue: asyncio.Queue):
     monitor = Monitor(NETWORK)
     loop = asyncio.get_running_loop()
-    with concurrent.futures.ThreadPoolExecutor(MAX_WORKERS) as pool:
+    with ThreadPoolExecutor(MAX_WORKERS) as pool:
         while True:
             aws = [loop.run_in_executor(pool, Monitor.scan_host, monitor, host) for host in monitor.get_hosts(NUM_OF_HOSTS)]
             for coro in asyncio.as_completed(aws):
@@ -27,7 +26,7 @@ async def scan_computers(queue) -> Coroutine[None, None, None]:
             print(f"Sleeping for {SLEEP_INTERVAL / 60} minutes...")
             await asyncio.sleep(SLEEP_INTERVAL)
 
-async def update_result(queue) -> Coroutine[None, None, None]:
+async def update_result(queue: asyncio.Queue):
     global count 
     while True:
         computer = await queue.get()
@@ -47,7 +46,7 @@ async def main():
     await data_queue.join()
     update_task.cancel()
     print("Took:", time.time() - start)
-    print("Got", count, "Computers")
+    print("Got", count, "Computers")  
 
 if __name__ == "__main__":
     asyncio.run(main())
