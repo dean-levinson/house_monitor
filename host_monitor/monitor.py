@@ -1,5 +1,6 @@
 import json 
 import itertools
+from typing import Generator, Dict
 
 import ipaddress
 import scapy.all as scapy
@@ -15,7 +16,7 @@ class Computer(object):
     """
     PACKET_DATA_ATTRS = "ip ttl".split()
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.attrs = {}
 
         if "packet_data" in kwargs:
@@ -25,10 +26,10 @@ class Computer(object):
                 if hasattr(self.packet_data, attr):
                     self.attrs[attr] = getattr(self.packet_data, attr)
 
-    def serialize(self):
+    def serialize(self) -> str:
         return json.dumps(self.attrs)
 
-    def __str__(self):
+    def __str__(self) -> None:
         string = "Computer {}:\n{{\n".format(self.attrs.get("ip", "Unknown"))
         for attr in self.attrs:
             string += " {}: {}\n".format(attr, self.attrs[attr])
@@ -43,24 +44,26 @@ class Monitor(object):
     :param network_subnet: the subnet of the network. in the shape of "10.0.0.0/24"
     :type network_subnet: str
     '''
-    def __init__(self, network_subnet):
+    def __init__(self, network_subnet) -> None:
         self.network_subnet = ipaddress.ip_network(network_subnet)
         self.existing_hosts = {}
 
-    def scan_network(self):
+    def scan_network(self) -> Generator[str, None, None]:
         for host in self.get_hosts():
             yield self.scan_host(host)
 
     def scan_host(self, host: str) -> Computer:
-        return self.send_ping(host)
+        result = self.send_ping(host)
+        self.existing_hosts[host] = result
+        return result
 
-    def get_hosts(self, max_hosts: int=0):
+    def get_hosts(self, max_hosts: int=0) -> Generator[str, None, None]:
         gen = (str(host) for host in self.network_subnet.hosts())
         if max_hosts:
             return itertools.islice(gen, max_hosts)
         return gen
 
-    def send_ping(self, ip_address):        
+    def send_ping(self, ip_address: str) -> Computer:
         ping_obj = Ping(ip_address)
         print("Send ping to {}".format(ip_address))
         ping_data = ping_obj.activate()
@@ -73,7 +76,7 @@ class Monitor(object):
         self.existing_hosts[ip_address] = computer_obj
         return computer_obj
 
-    def serialize(self):
+    def serialize(self) -> Dict[str]:
         pass
 
 if __name__ == "__main__":
