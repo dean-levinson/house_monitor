@@ -1,9 +1,16 @@
+# General
 .idea
 .devcontainer
 .vscode
-__pycache__
-bin/
-lib/
-share/
-pyvenv.cfg
+
+# host_monitor
+host_monitor/bin/
+host_monitor/lib/
+host_monitor/share/
+host_monitor/pyvenv.cfg
 */__pycache__/*
+
+# web
+node_modules/
+
+
