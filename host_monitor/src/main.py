@@ -5,15 +5,15 @@ from src.monitor import Monitor, HostNotFound
 
 count = 0
 NETWORK = "10.0.0.0/24"
-MAX_WORKERS = 20
-NUM_OF_HOSTS = 5
+MAX_WORKERS = 30
+NUM_OF_HOSTS = 256
 SLEEP_INTERVAL = 60 * 5 # 5 min
 
 async def scan_computers(queue: asyncio.Queue):
     monitor = Monitor(NETWORK)
     loop = asyncio.get_running_loop()
-    with ThreadPoolExecutor(MAX_WORKERS) as pool:
-        while True:
+    while True:
+        with ThreadPoolExecutor(MAX_WORKERS) as pool:
             aws = [loop.run_in_executor(pool, Monitor.scan_host, monitor, host) for host in monitor.get_hosts(NUM_OF_HOSTS)]
             for coro in asyncio.as_completed(aws):
                 try:
@@ -24,7 +24,8 @@ async def scan_computers(queue: asyncio.Queue):
                     queue.put_nowait(computer)
                 
             print(f"Sleeping for {SLEEP_INTERVAL / 60} minutes...")
-            await asyncio.sleep(SLEEP_INTERVAL)
+
+        await asyncio.sleep(SLEEP_INTERVAL)
 
 async def update_result(queue: asyncio.Queue):
     global count 
