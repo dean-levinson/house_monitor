@@ -4,7 +4,7 @@ from typing import Generator, Dict, Iterator, Optional
 
 import ipaddress
 
-from .network import Ping
+from src.network import Ping
 
 class HostNotFound(Exception):
     pass

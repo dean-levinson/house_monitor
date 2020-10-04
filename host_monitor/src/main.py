@@ -1,7 +1,7 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
-from .monitor import Monitor, HostNotFound
+from src.monitor import Monitor, HostNotFound
 
 count = 0
 NETWORK = "10.0.0.0/24"
