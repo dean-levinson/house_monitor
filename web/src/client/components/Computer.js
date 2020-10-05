@@ -13,16 +13,18 @@ export default class Computer extends Component {
     render() {
         return (
             <div className="computer">
-                <div className="innerBox">
+                <div id="innerBox">
                     <img src={computerImage}></img>
-                    <h3>Host {this.state.ip}</h3>
+                    <h3>{this.state.ip}</h3>
                 </div>
                 <ul className="computer">
                     <li className="computer">
-                        ip: {this.state.ip}
+                        <dev className="contentHeader">ip: </dev>
+                        {this.state.ip}
                     </li>
                     <li className="computer">
-                        ttl: {this.state.ttl}
+                    <dev className="contentHeader">ttl: </dev>
+                        {this.state.ttl}
                     </li>
                 </ul>
             </div> 

@@ -1,11 +1,13 @@
 * {
-    background-color: slategray;
+    background-color: rgba(112, 214, 240, 0.911);
 }
 
 h1.head {
     text-align: center;
     font-size: 100px;
-    color: lightgreen;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    border: black;
+    color: white;
     margin: 0;
 }
 
@@ -16,7 +18,6 @@ ul.computers {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    
 }
 
 li.computers {
@@ -32,23 +33,21 @@ li.computers {
 }
 
 ul.computers * {
-    background-color: lightgreen;
+    background-color: lightcyan;
 }
 
 img {
     width: 130px;
 }
 
-h3 {
+/* Host x.x.x.x */
+h3 { 
     font-size: 25px;
+    font-family: cursive;
     width: inherit;
     display: inherit;
     text-align: center;
-    color: black;
-}
-
-div.computer {
-    border: black;
+    color: dodgerblue;
 }
 
 div.computer img {
@@ -65,12 +64,21 @@ li.computer {
     color: dodgerblue;
     font-size: 20px;
     font-family: sans-serif;
-    font-weight: bold;
     margin-top: 5px;
 }
 
-.innerBox {
-    background-color: tomato;
+#innerBox *, #innerBox {
+    background-color: lightblue;
     border-radius: 30px;
     overflow: hidden;
+    margin-top: 10px;
+    /* margin-bottom: 30px; */
+}
+
+.contentHeader {
+    font-weight: bold;
+}
+
+ul.computer {
+    margin-top: 20px;
 }
