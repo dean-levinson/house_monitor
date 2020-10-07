@@ -1,5 +1,9 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+import traceback
+from traceback import print_exc
+
+import pika
 
 from src.monitor import Monitor, HostNotFound
 
@@ -29,12 +33,25 @@ async def scan_computers(queue: asyncio.Queue):
 
 async def update_result(queue: asyncio.Queue):
     global count 
+
+    connection = pika.Connection(pika.ConnectionParameters(host='localhost'))
+
+    channel = connection.channel()
+
+    channel.queue_declare(queue='computersQueue')
+
     while True:
         computer = await queue.get()
         if computer:
             print(f"Got {computer}")
             count += 1
+
+        channel.basic_publish(exchange='', routing_key='computersQueue', body=computer.serialize())
+        print(f" [x] Sent '{computer}!'")
         queue.task_done()
+
+    # add indication - maybe the scan_computers task (that sucks because coupled)
+    connection.close()
 
 async def main():
     import time
@@ -46,6 +63,7 @@ async def main():
     await scan_task
     await data_queue.join()
     update_task.cancel()
+    
     print("Took:", time.time() - start)
     print("Got", count, "Computers")  
 
