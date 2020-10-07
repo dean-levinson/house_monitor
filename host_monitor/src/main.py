@@ -25,8 +25,7 @@ async def scan_computers(queue: asyncio.Queue):
                 else:
                     queue.put_nowait(computer)
                 
-            print(f"Sleeping for {SLEEP_INTERVAL / 60} minutes...")
-
+        print(f"Sleeping for {SLEEP_INTERVAL / 60} minutes...")
         await asyncio.sleep(SLEEP_INTERVAL)
 
 async def update_result(queue: asyncio.Queue):
