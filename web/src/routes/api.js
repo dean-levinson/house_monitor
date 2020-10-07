@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var amqp = require('amqplib/callback_api')
-const computers_data = require('./computers.json');
 
 let computers = []
 
