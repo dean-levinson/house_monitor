@@ -1,2 +1,4 @@
 scapy
 ipaddress
+pika
+aio_pika
