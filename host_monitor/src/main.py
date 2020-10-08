@@ -1,6 +1,8 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
+import aio_pika
+
 from src.monitor import Monitor, HostNotFound
 
 count = 0
@@ -23,18 +25,29 @@ async def scan_computers(queue: asyncio.Queue):
                 else:
                     queue.put_nowait(computer)
                 
-            print(f"Sleeping for {SLEEP_INTERVAL / 60} minutes...")
-
+        print(f"Sleeping for {SLEEP_INTERVAL / 60} minutes...")
         await asyncio.sleep(SLEEP_INTERVAL)
 
 async def update_result(queue: asyncio.Queue):
     global count 
-    while True:
-        computer = await queue.get()
-        if computer:
-            print(f"Got {computer}")
-            count += 1
-        queue.task_done()
+
+    connection = await aio_pika.connect_robust("amqp://guest:guest@127.0.0.1", loop=asyncio.get_event_loop())
+
+    async with connection:
+        channel = await connection.channel()
+
+        while True:
+            computer = await queue.get()
+
+            if computer:
+                print(f"Got {computer}")
+                count += 1
+
+                await channel.default_exchange.publish(
+                    aio_pika.Message(body=computer.serialize().encode()), routing_key="computersQueue")
+
+                print(f" [x] Sent '{computer}!'")
+                queue.task_done()
 
 async def main():
     import time
@@ -45,7 +58,9 @@ async def main():
 
     await scan_task
     await data_queue.join()
+
     update_task.cancel()
+
     print("Took:", time.time() - start)
     print("Got", count, "Computers")  
 
