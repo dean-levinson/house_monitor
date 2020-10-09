@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('src:server');
 var http = require('http');
 var MongoClient = require('mongodb').MongoClient;
+var io = require('../io');
 
 /**
  * Get port from environment and store in Express.
@@ -32,6 +33,10 @@ MongoClient.connect("mongodb://localhost:27017/", { useUnifiedTopology: true }, 
   }
   app.locals.db = client.db("houseMonitor");
 
+  // start socket.io procedure
+  io.start_io(server, app);
+
+  // start server
   server.listen(port);
 });
 
@@ -98,3 +103,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+exports.server = server

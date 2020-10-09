@@ -19,11 +19,11 @@ export default class Computer extends Component {
                 </div>
                 <ul className="computer">
                     <li className="computer">
-                        <dev className="contentHeader">ip: </dev>
+                        <div className="contentHeader">ip: </div>
                         {this.state.ip}
                     </li>
                     <li className="computer">
-                    <dev className="contentHeader">ttl: </dev>
+                    <div className="contentHeader">ttl: </div>
                         {this.state.ttl}
                     </li>
                 </ul>
