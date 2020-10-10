@@ -5,12 +5,20 @@ module.exports.start_io = function(server, app)  {
 
     let interval;
 
+    const computersCollection = app.locals.db.collection("computers")
+
     io.on("connection", (socket) => {
         console.log("New client connected");
-        if (interval) {
-            clearInterval(interval);
-        }
-        interval = setInterval(() => getApiAndEmit(socket), 1000);
+        // if (interval) {
+        //     clearInterval(interval);
+        // }
+        getApiAndEmit(socket)
+        changeStream = computersCollection.watch()
+        // interval = setInterval(() => getApiAndEmit(socket), 1000);
+        changeStream.on("change", next => {
+            console.log("Change detected!", next);
+            getApiAndEmit(socket);
+        });
         socket.on("disconnect", () => {
             console.log("Client disconnected");
             clearInterval(interval);
