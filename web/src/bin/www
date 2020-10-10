@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('src:server');
 var http = require('http');
+var MongoClient = require('mongodb').MongoClient;
+var io = require('../io');
 
 /**
  * Get port from environment and store in Express.
@@ -22,10 +24,23 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Connect to the db, and then Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+MongoClient.connect("mongodb://localhost:27017/", { useUnifiedTopology: true }, (err, client) => {
+  if (err) {
+    logger.warn(`Failed to connect to the database. ${err.stack}`);
+  }
+  app.locals.db = client.db("houseMonitor");
+
+  // start socket.io procedure
+  io.start_io(server, app);
+
+  // start server
+  server.listen(port);
+});
+
+
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -88,3 +103,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+exports.server = server

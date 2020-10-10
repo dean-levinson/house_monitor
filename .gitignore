@@ -10,5 +10,11 @@ host_monitor/lib/
 host_monitor/share/
 host_monitor/pyvenv.cfg
 
+# 
+db/bin/
+db/lib/
+db/share/
+db/pyvenv.cfg
+
 # web
 node_modules/

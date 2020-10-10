@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import Computer from "./Computer";
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://localhost:3000";
 
 export default class Computers extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            sockets: [],
             computers: []
         };
     }
@@ -17,8 +20,26 @@ export default class Computers extends Component {
     }
 
     componentDidMount() {
-        this.getComputers();
+        //this.getComputers();
+        const socket = socketIOClient(ENDPOINT);
+        let sockets = this.state.sockets.slice();
+        sockets.push(socket);
+        this.setState({sockets: sockets})
+
+        socket.on("FromAPI", data => {
+            this.setState({computers: data});
+        });
+        console.log("mount: ", this.state.sockets);
     }
+
+    componentWillUnmount() {
+        console.log("unmount: ", this.state.sockets);
+        for (let index = 0; index < this.state.sockets.length; index++) {
+            this.state.sockets[index].disconnect();
+        }
+        this.setState({sockets: []});
+    }
+
 //style={{"ListStyleType":"none"}}
     render() {
         return (
